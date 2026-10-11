@@ -1,0 +1,266 @@
+// ==========================================
+// Practical 7
+// Name: Rithish
+// Enrollment Number: 92400120060
+// ==========================================
+
+
+// FILE 1: Controllers/HomeController.cs
+
+using System.Web.Mvc;
+using Practical_7.Models;
+
+namespace Practical_7.Controllers
+{
+    public class HomeController : Controller
+    {
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult Feedback()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Feedback(Feedback feedback)
+        {
+            if (ModelState.IsValid)
+            {
+                ViewBag.Message = "Feedback submitted successfully!";
+            }
+
+            return View(feedback);
+        }
+    }
+}
+
+
+// FILE 2: Models/Feedback.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace Practical_7.Models
+{
+    public class Feedback
+    {
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Enter a valid email")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Feedback is required")]
+        public string Message { get; set; }
+
+        [Range(1, 5, ErrorMessage = "Please select a rating")]
+        public int Rating { get; set; }
+    }
+}
+
+
+// FILE 3: Views/Home/Index.cshtml
+
+@{
+    ViewBag.Title = "Home";
+}
+
+<div style="text-align:center">
+    <h2>Welcome to Feedback Management System</h2>
+
+    <p>
+        This application allows users to submit their valuable feedback.
+    </p>
+
+    <p>Click below to submit your feedback.</p>
+
+    <br />
+
+    @Html.ActionLink("Give Feedback", "Feedback", "Home")
+</div>
+
+
+// FILE 4: Views/Home/Feedback.cshtml
+
+@model Practical_7.Models.Feedback
+
+@{
+    ViewBag.Title = "Feedback";
+}
+
+<div style="width:500px; margin:auto;">
+
+    @if (ViewBag.Message != null)
+    {
+        <div style="background-color:lightgreen; padding:10px;">
+            @ViewBag.Message
+        </div>
+        <br />
+    }
+
+    @Html.Partial("_FeedbackForm", Model)
+
+</div>
+
+
+// FILE 5: Views/Shared/_FeedbackForm.cshtml
+
+@model Practical_7.Models.Feedback
+
+<h2>Feedback Form</h2>
+
+@using (Html.BeginForm("Feedback", "Home", FormMethod.Post))
+{
+    <div>
+        @Html.LabelFor(x => x.Name)
+        <br />
+        @Html.TextBoxFor(x => x.Name)
+        <br />
+        @Html.ValidationMessageFor(x => x.Name)
+    </div>
+
+    <br />
+
+    <div>
+        @Html.LabelFor(x => x.Email)
+        <br />
+        @Html.TextBoxFor(x => x.Email)
+        <br />
+        @Html.ValidationMessageFor(x => x.Email)
+    </div>
+
+    <br />
+
+    <div>
+        @Html.LabelFor(x => x.Message)
+        <br />
+        @Html.TextAreaFor(x => x.Message)
+        <br />
+        @Html.ValidationMessageFor(x => x.Message)
+    </div>
+
+    <br />
+
+    <div>
+        @Html.LabelFor(x => x.Rating)
+        <br />
+
+        @Html.DropDownListFor(
+            x => x.Rating,
+            new SelectList(
+                new[]
+                {
+                    new { Value = 1, Text = "1 - Poor" },
+                    new { Value = 2, Text = "2 - Fair" },
+                    new { Value = 3, Text = "3 - Good" },
+                    new { Value = 4, Text = "4 - Very Good" },
+                    new { Value = 5, Text = "5 - Excellent" }
+                },
+                "Value",
+                "Text"
+            ),
+            "Select Rating"
+        )
+
+        <br />
+        @Html.ValidationMessageFor(x => x.Rating)
+    </div>
+
+    <br />
+
+    <input type="submit" value="Submit Feedback" />
+}
+
+
+// FILE 6: Views/Shared/_Layout.cshtml
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <title>@ViewBag.Title - Feedback Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            margin: 15px;
+            text-decoration: none;
+        }
+
+        main {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        input, textarea, select {
+            padding: 8px;
+            width: 300px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .field-validation-error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Feedback Management System</h1>
+        <p>Name: Rithish | Enrollment No: 92400120060</p>
+
+        <nav>
+            @Html.ActionLink("Home", "Index", "Home")
+            @Html.ActionLink("Feedback", "Feedback", "Home")
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <p>© 2026 Feedback Management System</p>
+    </footer>
+</body>
+</html>
+
+
+// FILE 7: Views/_ViewStart.cshtml
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
